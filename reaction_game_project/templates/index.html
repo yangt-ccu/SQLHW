@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>反應時間測試系統</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-gradient: linear-gradient(135deg, #434343 0%, #000000 100%);
+            --card-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            --hover-transform: translateY(-8px);
+        }
+
+        * {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        body {
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="20" cy="80" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="30" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .main-title {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #fff, #f8f9fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            margin-bottom: 1.5rem;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 300;
+            margin-bottom: 3rem;
+        }
+
+        .action-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .action-card:hover::before {
+            left: 100%;
+        }
+
+        .action-card:hover {
+            transform: var(--hover-transform) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .card-description {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .action-btn {
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+            border-radius: 50px;
+            border: none;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-register {
+            background: var(--secondary-gradient);
+            color: white;
+        }
+
+        .btn-login {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            animation: floatingAnimation 6s ease-in-out infinite;
+        }
+
+        @keyframes floatingAnimation {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .features-list {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 3rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-item {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-item i {
+            color: #4facfe;
+            margin-right: 1rem;
+            font-size: 1.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .action-card {
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 浮動元素 -->
+    <div class="floating-elements">
+        <div class="floating-circle" style="width: 80px; height: 80px; top: 10%; left: 10%; animation-delay: 0s;"></div>
+        <div class="floating-circle" style="width: 120px; height: 120px; top: 20%; right: 10%; animation-delay: 2s;"></div>
+        <div class="floating-circle" style="width: 60px; height: 60px; bottom: 30%; left: 20%; animation-delay: 4s;"></div>
+        <div class="floating-circle" style="width: 100px; height: 100px; bottom: 10%; right: 20%; animation-delay: 1s;"></div>
+    </div>
+
+    <div class="hero-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <!-- Flash 訊息 -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show">
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- 主標題 -->
+                    <div class="text-center mb-5">
+                        <h1 class="main-title">🎯 反應時間測試系統</h1>
+                        <p class="subtitle">測試並改善你的反應速度，挑戰你的極限</p>
+                    </div>
+                    
+                    <!-- 動作卡片 -->
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <div class="action-card h-100">
+                                <div class="text-center">
+                                    <div class="card-icon">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <h3 class="card-title">新用戶註冊</h3>
+                                    <p class="card-description">
+                                        第一次使用？創建你的個人帳號，<br>
+                                        開始你的反應速度測試之旅
+                                    </p>
+                                    <a href="{{ url_for('register') }}" class="btn action-btn btn-register">
+                                        <i class="fas fa-rocket me-2"></i>立即註冊
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-6 mb-4">
+                            <div class="action-card h-100">
+                                <div class="text-center">
+                                    <div class="card-icon">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                    </div>
+                                    <h3 class="card-title">用戶登入</h3>
+                                    <p class="card-description">
+                                        已經有帳號？直接登入並<br>
+                                        繼續你的反應訓練挑戰
+                                    </p>
+                                    <a href="{{ url_for('login') }}" class="btn action-btn btn-login">
+                                        <i class="fas fa-play me-2"></i>開始遊戲
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 特色功能 -->
+                    <div class="features-list">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="feature-item">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>多種難度等級挑戰</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-stopwatch"></i>
+                                    <span>毫秒級反應時間測量</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-item">
+                                    <i class="fas fa-trophy"></i>
+                                    <span>詳細的成績分析報告</span>
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <span>支援手機和電腦操作</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 添加滑鼠跟隨效果
+        document.addEventListener('mousemove', function(e) {
+            const cards = document.querySelectorAll('.action-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                
+                if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+                } else {
+                    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+                }
+            });
+        });
+
+        // 載入動畫
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

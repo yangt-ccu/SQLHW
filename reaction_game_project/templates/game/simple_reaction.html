@@ -1,0 +1,562 @@
+{% extends "base.html" %}
+
+{% block title %}快速反應測試{% endblock %}
+
+{% block content %}
+<div class="text-center mb-3">
+    <h3>⚡ 快速反應測試</h3>
+    <p>當紅色圓圈出現時，立即點擊它！</p>
+    <small class="text-muted">挑戰你的極限反應速度</small>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="game-container">
+            <div class="game-stats mb-3">
+                <div class="row text-center">
+                    <div class="col">
+                        <strong>回合: </strong><span id="roundCount">0</span>/15
+                    </div>
+                    <div class="col">
+                        <strong>平均反應: </strong><span id="avgReaction">0</span>ms
+                    </div>
+                    <div class="col">
+                        <strong>最快反應: </strong><span id="bestReaction">-</span>ms
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-area" id="gameArea" data-session-id="{{ session_id }}">
+                <div class="countdown" id="countdown" style="display: none;"></div>
+                <div class="stimulus" id="stimulus" style="display: none;"></div>
+                <button id="startBtn" class="btn btn-start-custom btn-lg pulse">⚡ 開始挑戰</button>
+            </div>
+            
+            <!-- 即時反應顯示 -->
+            <div class="reaction-history mt-3" id="reactionHistory" style="display: none;">
+                <h6>⚡ 即時反應：</h6>
+                <div class="d-flex flex-wrap gap-2" id="reactionTags"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 載入指示器 -->
+<div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="loading-content">
+        <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">載入中...</span>
+        </div>
+        <p class="mt-3">正在生成結果分析...</p>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-orange: #fa7921;
+    --success-green: #248232;
+    --warning-orange: #fe9920;
+    --dark-blue: #0c4767;
+    --blue-gray: #4a6670;
+}
+
+.game-container {
+    background: linear-gradient(135deg, var(--dark-blue) 0%, var(--blue-gray) 100%);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(12, 71, 103, 0.4);
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+.game-area {
+    width: 100%;
+    height: 320px;
+    background-color: white;
+    border: 3px solid var(--primary-orange);
+    border-radius: 10px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: crosshair;
+    box-shadow: inset 0 3px 15px rgba(250, 121, 33, 0.15);
+}
+
+.stimulus {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ff1744, #d50000);
+    cursor: pointer;
+    transition: all 0.03s ease;
+    box-shadow: 0 4px 20px rgba(255, 23, 68, 0.7);
+    animation: ultraQuickPulse 0.2s ease-in-out;
+}
+
+@keyframes ultraQuickPulse {
+    0% { transform: scale(0.5); opacity: 0.6; }
+    50% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.countdown {
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--primary-orange);
+    text-shadow: 4px 4px 8px rgba(0,0,0,0.4);
+    animation: superFastCountdown 0.3s ease-in-out;
+}
+
+@keyframes superFastCountdown {
+    0% { transform: scale(0.6); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+.game-stats {
+    background: rgba(255,255,255,0.98);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    border: 2px solid var(--primary-orange);
+    color: var(--dark-blue);
+    font-weight: 600;
+}
+
+.reaction-tag {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 2px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    animation: superQuickTagAppear 0.2s ease-out;
+}
+
+@keyframes superQuickTagAppear {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.reaction-lightning { 
+    background: linear-gradient(45deg, var(--warning-orange), #ffad33); 
+    color: var(--dark-blue); 
+}
+
+.reaction-excellent { 
+    background: linear-gradient(45deg, var(--success-green), #2ea043); 
+}
+
+.reaction-good { 
+    background: linear-gradient(45deg, var(--primary-orange), var(--warning-orange)); 
+}
+
+.reaction-average { 
+    background: linear-gradient(45deg, var(--warning-orange), #ffad33); 
+    color: var(--dark-blue); 
+}
+
+.reaction-slow { 
+    background: linear-gradient(45deg, var(--blue-gray), var(--dark-blue)); 
+}
+
+.feedback-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 32px;
+    font-weight: 900;
+    z-index: 1000;
+    padding: 6px 12px;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.98);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    animation: instantFeedback 0.25s ease-out;
+    border: 2px solid;
+}
+
+@keyframes instantFeedback {
+    0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+    70% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.btn-start-custom {
+    background: linear-gradient(45deg, var(--warning-orange), var(--primary-orange));
+    border: none;
+    color: white;
+    font-weight: 800;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(254, 153, 32, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-start-custom:hover {
+    background: linear-gradient(45deg, var(--primary-orange), #e66b00);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(250, 121, 33, 0.6);
+    color: white;
+}
+
+.pulse {
+    animation: fastPulse 1s infinite;
+}
+
+@keyframes fastPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+.reaction-history h6 {
+    color: white;
+    margin-bottom: 15px;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.loading-content p {
+    color: var(--dark-blue);
+    font-weight: 600;
+    margin: 0;
+}
+</style>
+
+<script>
+class HyperReactionGame {
+    constructor() {
+        const gameArea = document.getElementById('gameArea');
+        const sessionIdAttr = gameArea?.getAttribute('data-session-id');
+        
+        this.sessionId = sessionIdAttr ? parseInt(sessionIdAttr) : null;
+        
+        if (!this.sessionId || isNaN(this.sessionId)) {
+            alert('遊戲初始化失敗：無效的會話 ID。請重新開始遊戲。');
+            window.location.href = '/game_menu';
+            return;
+        }
+        
+        this.gameArea = gameArea;
+        this.stimulus = document.getElementById('stimulus');
+        this.startBtn = document.getElementById('startBtn');
+        this.countdown = document.getElementById('countdown');
+        this.reactionHistory = document.getElementById('reactionHistory');
+        this.reactionTags = document.getElementById('reactionTags');
+        this.loadingOverlay = document.getElementById('loadingOverlay');
+        
+        this.roundCount = 0;
+        this.maxRounds = 15;
+        this.reactionTimes = [];
+        this.stimulusStartTime = null;
+        this.gameActive = false;
+        
+        this.initGame();
+    }
+    
+    initGame() {
+        this.startBtn.addEventListener('click', () => {
+            this.startGame();
+        });
+        
+        this.gameArea.addEventListener('click', (e) => {
+            if (e.target === this.stimulus && this.gameActive) {
+                this.handleClick();
+            }
+        });
+    }
+    
+    startGame() {
+        this.startBtn.style.display = 'none';
+        this.reactionHistory.style.display = 'block';
+        this.startCountdown();
+    }
+    
+    startCountdown() {
+        this.countdown.style.display = 'block';
+        let count = 3;
+        
+        const timer = setInterval(() => {
+            this.countdown.textContent = count;
+            this.countdown.style.animation = 'superFastCountdown 0.3s ease-in-out';
+            count--;
+            
+            if (count < 0) {
+                clearInterval(timer);
+                this.countdown.style.display = 'none';
+                this.startNextRound();
+            }
+        }, 300);
+    }
+    
+    startNextRound() {
+        if (this.roundCount >= this.maxRounds) {
+            this.endGame();
+            return;
+        }
+        
+        this.roundCount++;
+        this.updateStats();
+        
+        const delay = Math.random() * 900 + 100;
+        
+        setTimeout(() => {
+            this.showStimulus();
+        }, delay);
+    }
+    
+    showStimulus() {
+        const gameAreaRect = this.gameArea.getBoundingClientRect();
+        const stimulusSize = 50;
+        const padding = 10;
+        const maxX = gameAreaRect.width - stimulusSize - padding;
+        const maxY = gameAreaRect.height - stimulusSize - padding;
+        
+        const x = Math.random() * maxX + padding;
+        const y = Math.random() * maxY + padding;
+        
+        this.stimulus.style.left = x + 'px';
+        this.stimulus.style.top = y + 'px';
+        this.stimulus.style.display = 'block';
+        this.stimulus.style.animation = 'ultraQuickPulse 0.2s ease-in-out';
+        
+        this.stimulusStartTime = Date.now();
+        this.gameActive = true;
+        
+        setTimeout(() => {
+            if (this.gameActive) {
+                this.handleMiss();
+            }
+        }, 800);
+    }
+    
+    handleClick() {
+        if (!this.gameActive) return;
+        
+        const reactionTime = Date.now() - this.stimulusStartTime;
+        this.gameActive = false;
+        
+        this.recordRound(reactionTime, true);
+        this.reactionTimes.push(reactionTime);
+        this.addReactionTag(reactionTime);
+        
+        this.hideStimulus();
+        this.showFeedback(reactionTime);
+        
+        setTimeout(() => this.startNextRound(), 100);
+    }
+    
+    handleMiss() {
+        if (!this.gameActive) return;
+        
+        this.gameActive = false;
+        
+        this.recordRound(800, false);
+        this.addReactionTag(800, true);
+        
+        this.hideStimulus();
+        this.showFeedback(null, true);
+        
+        setTimeout(() => this.startNextRound(), 100);
+    }
+    
+    hideStimulus() {
+        this.stimulus.style.display = 'none';
+    }
+    
+    showFeedback(reactionTime, isMiss = false) {
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-popup';
+        
+        if (isMiss) {
+            feedback.textContent = '⚡ MISS!';
+            feedback.style.color = '#4a6670';
+            feedback.style.borderColor = '#4a6670';
+        } else {
+            if (reactionTime < 120) {
+                feedback.textContent = `⚡ ${reactionTime}ms`;
+                feedback.style.color = '#fe9920';
+                feedback.style.borderColor = '#fe9920';
+            } else {
+                feedback.textContent = `${reactionTime}ms`;
+                feedback.style.color = this.getReactionColor(reactionTime);
+                feedback.style.borderColor = this.getReactionColor(reactionTime);
+            }
+        }
+        
+        this.gameArea.appendChild(feedback);
+        
+        setTimeout(() => {
+            if (feedback.parentNode) {
+                feedback.parentNode.removeChild(feedback);
+            }
+        }, 250);
+    }
+    
+    addReactionTag(reactionTime, isMiss = false) {
+        const tag = document.createElement('span');
+        tag.className = 'reaction-tag';
+        
+        if (isMiss) {
+            tag.textContent = 'MISS';
+            tag.className += ' reaction-slow';
+        } else {
+            tag.textContent = `${reactionTime}ms`;
+            
+            if (reactionTime < 120) {
+                tag.className += ' reaction-lightning';
+                tag.textContent = `⚡${reactionTime}ms`;
+            } else if (reactionTime < 180) {
+                tag.className += ' reaction-excellent';
+            } else if (reactionTime < 250) {
+                tag.className += ' reaction-good';
+            } else if (reactionTime < 350) {
+                tag.className += ' reaction-average';
+            } else {
+                tag.className += ' reaction-slow';
+            }
+        }
+        
+        this.reactionTags.appendChild(tag);
+        
+        while (this.reactionTags.children.length > 12) {
+            this.reactionTags.removeChild(this.reactionTags.firstChild);
+        }
+        
+        this.reactionTags.scrollLeft = this.reactionTags.scrollWidth;
+    }
+    
+    getReactionColor(reactionTime) {
+        if (reactionTime < 120) return '#fe9920';
+        if (reactionTime < 180) return '#248232';
+        if (reactionTime < 250) return '#fa7921';
+        if (reactionTime < 350) return '#fe9920';
+        return '#4a6670';
+    }
+    
+    recordRound(reactionTime, isCorrect) {
+        const requestData = {
+            round_number: this.roundCount,
+            stimulus_color: 'red',
+            reaction_time: reactionTime,
+            response_accuracy: isCorrect
+        };
+        
+        return fetch('/api/record_round', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestData)
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        }).catch(error => {
+            console.error('記錄回合時發生錯誤:', error);
+            throw error;
+        });
+    }
+    
+    updateStats() {
+        document.getElementById('roundCount').textContent = this.roundCount;
+        
+        if (this.reactionTimes.length > 0) {
+            const avgReaction = (this.reactionTimes.reduce((a, b) => a + b, 0) / this.reactionTimes.length).toFixed(0);
+            document.getElementById('avgReaction').textContent = avgReaction;
+            
+            const bestReaction = Math.min(...this.reactionTimes);
+            document.getElementById('bestReaction').textContent = bestReaction;
+        }
+    }
+    
+    endGame() {
+        this.showCompletionMessage();
+        this.loadingOverlay.style.display = 'flex';
+        
+        setTimeout(() => {
+            fetch('/api/end_session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success && data.session_id) {
+                    setTimeout(() => {
+                        window.location.href = `/results/${data.session_id}`;
+                    }, 500);
+                } else {
+                    this.handleEndGameError('API 回應格式錯誤');
+                }
+            })
+            .catch(error => {
+                this.handleEndGameError(error.message);
+            });
+        }, 1500);
+    }
+    
+    handleEndGameError(errorMessage) {
+        this.loadingOverlay.style.display = 'none';
+        
+        if (this.sessionId) {
+            window.location.href = `/results/${this.sessionId}`;
+        } else {
+            alert(`遊戲結束時發生錯誤：${errorMessage}\n\n將返回遊戲選單。`);
+            window.location.href = '/game_menu';
+        }
+    }
+    
+    showCompletionMessage() {
+        const completion = document.createElement('div');
+        completion.className = 'feedback-popup';
+        completion.style.fontSize = '36px';
+        completion.style.color = '#248232';
+        completion.style.borderColor = '#248232';
+        completion.textContent = '🎯 完成！';
+        completion.style.animation = 'instantFeedback 0.8s ease-out';
+        
+        this.gameArea.appendChild(completion);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        new HyperReactionGame();
+    } catch (error) {
+        console.error('初始化遊戲時發生錯誤:', error);
+        alert('遊戲初始化失敗，請重新整理頁面或返回選單重試。');
+    }
+});
+</script>
+{% endblock %}

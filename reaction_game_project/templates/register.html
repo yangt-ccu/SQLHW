@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}開始測試 - 反應時間測試系統{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="register-card">
+            <div class="card-header">
+                <h3 class="text-center">🚀 快速開始</h3>
+                <p class="text-center text-muted">只需要簡單註冊即可開始測試你的反應時間</p>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">用戶名</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="age" class="form-label">年齡 (可選)</label>
+                        <input type="number" class="form-control" id="age" name="age" min="1" max="120">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-play"></i> 開始測試
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-orange: #fa7921;
+    --success-green: #248232;
+    --warning-orange: #fe9920;
+    --dark-blue: #0c4767;
+    --blue-gray: #4a6670;
+}
+
+.register-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: none;
+    overflow: hidden;
+    margin-top: 50px;
+}
+
+.register-card .card-header {
+    background: linear-gradient(135deg, var(--dark-blue) 0%, var(--blue-gray) 100%);
+    color: white;
+    padding: 30px;
+    border-bottom: none;
+}
+
+.register-card .card-header h3 {
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.register-card .card-body {
+    padding: 40px;
+}
+
+.form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-orange);
+    box-shadow: 0 0 0 0.2rem rgba(250, 121, 33, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark-blue);
+    margin-bottom: 8px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-orange) 0%, var(--warning-orange) 100%);
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 15px 0;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(250, 121, 33, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #e66b00 0%, var(--primary-orange) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(250, 121, 33, 0.4);
+    color: white;
+}
+</style>
+{% endblock %}

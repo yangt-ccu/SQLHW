@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}測試結果{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg">
+                <div class="card-header bg-success text-white text-center">
+                    <h3>🎯 反應時間測試結果</h3>
+                    <p class="mb-0">測試完成！</p>
+                </div>
+                
+                <div class="card-body">
+                    <!-- 基本統計 -->
+                    <div class="row mb-4">
+                        <div class="col-md-3 text-center">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <h2 class="text-primary">{{ session.total_rounds or 0 }}</h2>
+                                    <p class="mb-0">總回合數</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h2 class="text-success">{{ session.correct_responses or 0 }}</h2>
+                                    <p class="mb-0">成功點擊</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h2 class="text-warning">
+                                        {% if session.average_reaction_time %}
+                                            {{ "%.0f"|format(session.average_reaction_time) }}ms
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </h2>
+                                    <p class="mb-0">平均反應時間</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="card border-info">
+                                <div class="card-body">
+                                    <h2 class="text-info">
+                                        {% if session.total_rounds and session.total_rounds > 0 %}
+                                            {{ "%.1f"|format((session.correct_responses / session.total_rounds * 100)) }}%
+                                        {% else %}
+                                            0%
+                                        {% endif %}
+                                    </h2>
+                                    <p class="mb-0">準確率</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 回合記錄 -->
+                    {% if rounds %}
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>📊 詳細回合記錄</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>回合</th>
+                                            <th>反應時間</th>
+                                            <th>結果</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for round in rounds %}
+                                        <tr>
+                                            <td>{{ round.round_number }}</td>
+                                            <td>
+                                                {% if round.response_accuracy %}
+                                                    <span class="badge bg-success">{{ round.reaction_time }}ms</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">MISS</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if round.response_accuracy %}
+                                                    <i class="fas fa-check text-success"></i> 成功
+                                                {% else %}
+                                                    <i class="fas fa-times text-danger"></i> 錯過
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <h6>⚠️ 沒有找到回合記錄</h6>
+                        <p class="mb-0">可能是資料記錄過程中出現問題。</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- 操作按鈕 -->
+                    <div class="row mt-4">
+                        <div class="col-12 text-center">
+                            <a href="{{ url_for('game_menu') }}" class="btn btn-primary btn-lg me-3">
+                                <i class="fas fa-redo"></i> 重新測試
+                            </a>
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-home"></i> 返回首頁
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

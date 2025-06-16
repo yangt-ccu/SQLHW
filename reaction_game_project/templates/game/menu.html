@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}遊戲選單{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>🎮 反應時間測試系統</h3>
+                    <p class="mb-0">歡迎, {{ session.username }}!</p>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <h5>選擇你想要的測試類型</h5>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-bolt fa-3x text-warning mb-3"></i>
+                                    <h5 class="card-title">⚡ 簡單反應測試</h5>
+                                    <p class="card-text">當紅色圓圈出現時立即點擊</p>
+                                    <a href="{{ url_for('simple_reaction_game') }}" class="btn btn-warning btn-lg">開始測試</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-secondary">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-clock fa-3x text-secondary mb-3"></i>
+                                    <h5 class="card-title">🔜 更多測試</h5>
+                                    <p class="card-text">敬請期待更多有趣的測試</p>
+                                    <button class="btn btn-secondary btn-lg" disabled>即將推出</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle"></i> 測試說明：</h6>
+                                <ul class="mb-0">
+                                    <li>總共 15 回合測試</li>
+                                    <li>當紅色圓圈出現時盡快點擊</li>
+                                    <li>測試完成後會顯示詳細分析</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

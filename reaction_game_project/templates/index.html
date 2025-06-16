@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+
+{% block title %}反應時間測試系統{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-center mb-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="hero-title">⚡ 反應時間測試系統</h1>
+                <p class="hero-subtitle">測試並提升你的視覺反應速度</p>
+                <div class="hero-stats">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="stat-item">
+                                <h3>🎯</h3>
+                                <h4>精確測量</h4>
+                                <p>毫秒級精度</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-item">
+                                <h3>📊</h3>
+                                <h4>數據分析</h4>
+                                <p>詳細統計報告</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-item">
+                                <h3>🏆</h3>
+                                <h4>挑戰極限</h4>
+                                <p>突破個人紀錄</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 快速開始 -->
+<div class="row justify-content-center mb-5">
+    <div class="col-md-6">
+        <div class="quick-start-card">
+            <div class="card-body text-center">
+                <h3 class="card-title">🚀 快速開始</h3>
+                <p class="card-text">立即開始測試你的反應能力！只需要註冊一個簡單的用戶名即可。</p>
+                <a href="{{ url_for('register') }}" class="btn btn-primary-custom btn-lg pulse-btn">
+                    <i class="fas fa-play"></i> 開始測試
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 功能介紹 -->
+<div class="features-section mb-5">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h4>極速挑戰</h4>
+                <p>15回合快節奏測試，挑戰你的極限反應速度。每回合僅有不到1秒的反應時間！</p>
+                <ul class="feature-list">
+                    <li>隨機位置出現</li>
+                    <li>毫秒級計時</li>
+                    <li>即時反饋</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h4>詳細分析</h4>
+                <p>獲得完整的表現分析報告，包含反應時間趨勢和準確率統計。</p>
+                <ul class="feature-list">
+                    <li>平均反應時間</li>
+                    <li>最佳成績記錄</li>
+                    <li>表現評估</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="feature-card">
+                <div class="feature-icon">🎮</div>
+                <h4>簡單易用</h4>
+                <p>直觀的用戶界面，無需複雜設置。點擊紅色圓圈即可開始你的反應力訓練。</p>
+                <ul class="feature-list">
+                    <li>一鍵開始</li>
+                    <li>響應式設計</li>
+                    <li>跨平台支持</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 反應時間基準 -->
+<div class="benchmarks-section mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="benchmark-card">
+                <h3 class="text-center mb-4">⏱️ 反應時間基準</h3>
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="benchmark-item excellent">
+                            <div class="benchmark-time">&lt; 180ms</div>
+                            <div class="benchmark-label">優秀</div>
+                            <small>職業電競選手水準</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="benchmark-item good">
+                            <div class="benchmark-time">180-250ms</div>
+                            <div class="benchmark-label">良好</div>
+                            <small>高於平均水準</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="benchmark-item average">
+                            <div class="benchmark-time">250-350ms</div>
+                            <div class="benchmark-label">正常</div>
+                            <small>一般成年人水準</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="benchmark-item needs-improvement">
+                            <div class="benchmark-time">&gt; 350ms</div>
+                            <div class="benchmark-label">待提升</div>
+                            <small>需要更多練習</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 小貼士 -->
+<div class="tips-section mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="tips-card">
+                <h3 class="text-center mb-4">💡 提升技巧</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="tip-item">
+                            <h5>🎯 專注注視</h5>
+                            <p>保持眼睛專注在遊戲區域中央，利用周邊視覺捕捉圓圈出現。</p>
+                        </div>
+                        <div class="tip-item">
+                            <h5>⚡ 放鬆準備</h5>
+                            <p>保持手指輕鬆放在滑鼠上，過度緊張會影響反應速度。</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="tip-item">
+                            <h5>🔄 規律練習</h5>
+                            <p>定期練習可以顯著提升反應時間，建議每天進行幾輪測試。</p>
+                        </div>
+                        <div class="tip-item">
+                            <h5>😌 保持冷靜</h5>
+                            <p>不要因為偶爾錯過而緊張，保持穩定的心理狀態很重要。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-orange: #fa7921;
+    --success-green: #248232;
+    --warning-orange: #fe9920;
+    --dark-blue: #0c4767;
+    --blue-gray: #4a6670;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, var(--dark-blue) 0%, var(--blue-gray) 100%);
+    color: white;
+    padding: 60px 0;
+    border-radius: 15px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 30px rgba(12, 71, 103, 0.3);
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+.stat-item {
+    padding: 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(250, 121, 33, 0.3);
+}
+
+.stat-item h3 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.quick-start-card {
+    background: linear-gradient(135deg, var(--primary-orange) 0%, var(--warning-orange) 100%);
+    color: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(250, 121, 33, 0.3);
+    border: none;
+    padding: 30px;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--success-green) 0%, #2ea043 100%);
+    border: none;
+    color: white;
+    font-weight: 700;
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(36, 130, 50, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+    background: linear-gradient(135deg, #1e6f2b 0%, var(--success-green) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(36, 130, 50, 0.4);
+    color: white;
+}
+
+.pulse-btn {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.feature-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    height: 100%;
+    transition: transform 0.3s ease;
+    border-left: 4px solid var(--primary-orange);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(250, 121, 33, 0.2);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: var(--primary-orange);
+}
+
+.feature-card h4 {
+    color: var(--dark-blue);
+    margin-bottom: 15px;
+}
+
+.feature-list {
+    text-align: left;
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    margin-bottom: 8px;
+    color: var(--blue-gray);
+}
+
+.feature-list li:before {
+    content: "✓ ";
+    color: var(--success-green);
+    font-weight: bold;
+}
+
+.benchmark-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border: 2px solid var(--blue-gray);
+}
+
+.benchmark-card h3 {
+    color: var(--dark-blue);
+}
+
+.benchmark-item {
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.benchmark-time {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.benchmark-label {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.excellent { 
+    background: linear-gradient(135deg, var(--success-green), #2ea043); 
+    color: white; 
+}
+
+.good { 
+    background: linear-gradient(135deg, var(--primary-orange), var(--warning-orange)); 
+    color: white; 
+}
+
+.average { 
+    background: linear-gradient(135deg, var(--warning-orange), #ffad33); 
+    color: white; 
+}
+
+.needs-improvement { 
+    background: linear-gradient(135deg, var(--blue-gray), var(--dark-blue)); 
+    color: white; 
+}
+
+.tips-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border: 2px solid var(--blue-gray);
+}
+
+.tips-card h3 {
+    color: var(--dark-blue);
+}
+
+.tip-item {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-orange);
+}
+
+.tip-item h5 {
+    color: var(--dark-blue);
+    margin-bottom: 10px;
+}
+
+.tip-item p {
+    color: var(--blue-gray);
+    margin-bottom: 0;
+}
+</style>
+{% endblock %}
